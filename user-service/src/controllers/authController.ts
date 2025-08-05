@@ -6,7 +6,9 @@ import { generateToken } from '../utils/jwt';
 export async function register(req: Request, res: Response) {
   const { email, password } = req.body;
 
-  if (!email || !password || password.length < 6) {
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!email || !password || password.length < 6 || !isValidEmail) {
     return res.status(400).json({ message: 'Invalid input' });
   }
 
