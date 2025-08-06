@@ -142,6 +142,7 @@ h2, h3 {
   padding: 1rem;
   margin-bottom: 1rem;
   transition: box-shadow 0.2s ease-in-out;
+  width: 582px;
 }
 
 .todo-item:hover {

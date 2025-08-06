@@ -19,6 +19,9 @@ export default function TodoList({ token, onLogout }: TodoListProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   const loadTodos = async () => {
     try {
@@ -54,6 +57,25 @@ export default function TodoList({ token, onLogout }: TodoListProps) {
   const handleDelete = async (id: number) => {
     await deleteTodo(token, id);
     loadTodos();
+  };
+
+  const startEdit = (todo: Todo) => {
+    setEditingId(todo.id);
+    setEditTitle(todo.title);
+    setEditDescription(todo.description || '');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditTitle('');
+    setEditDescription('');
+  };
+
+  const saveEdit = async (id: number) => {
+    await handleUpdate(id, { title: editTitle, description: editDescription });
+    setEditingId(null);
+    setEditTitle('');
+    setEditDescription('');
   };
 
   return (
@@ -95,20 +117,64 @@ export default function TodoList({ token, onLogout }: TodoListProps) {
           <ul className="todo-list">
             {todos.map(todo => (
               <li key={todo.id} className={`todo-item ${todo.status}`}>
-                <div>
-                  <b className="todo-title">{todo.title}</b>
-                  {todo.description && <p className="todo-description">{todo.description}</p>}
-                </div>
+                {editingId === todo.id ? (
+                  <div style={{ flex: 1 }}>
+                    <input
+                      className="input"
+                      value={editTitle}
+                      onChange={e => setEditTitle(e.target.value)}
+                      required
+                    />
+                    <input
+                      className="input"
+                      value={editDescription}
+                      onChange={e => setEditDescription(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <b className="todo-title">{todo.title}</b>
+                    {todo.description && <p className="todo-description">{todo.description}</p>}
+                  </div>
+                )}
                 <div className="todo-actions">
-                  <button
-                    onClick={() => handleUpdate(todo.id, { status: todo.status === 'todo' ? 'done' : 'todo' })}
-                    className="button small-button status-button"
-                  >
-                    Mark as {todo.status === 'todo' ? 'Done' : 'Todo'}
-                  </button>
-                  <button onClick={() => handleDelete(todo.id)} className="button small-button delete-button">
-                    Delete
-                  </button>
+                  {editingId === todo.id ? (
+                    <>
+                      <button
+                        onClick={() => saveEdit(todo.id)}
+                        className="button small-button primary-button"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelEdit}
+                        className="button small-button secondary-button"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => handleUpdate(todo.id, { status: todo.status === 'todo' ? 'done' : 'todo' })}
+                        className="button small-button status-button"
+                      >
+                        Mark as {todo.status === 'todo' ? 'Done' : 'Todo'}
+                      </button>
+                      <button
+                        onClick={() => startEdit(todo)}
+                        className="button small-button"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(todo.id)}
+                        className="button small-button delete-button"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             ))}
