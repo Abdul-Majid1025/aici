@@ -7,5 +7,6 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["jest.config.js", "jest.config.ts", "node_modules", "dist"]
 }

@@ -1,0 +1,58 @@
+services:
+  postgres-auth:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Khuljasimsim@13
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+
+  postgres-todo:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Khuljasimsim@13
+    ports:
+      - "5434:5432"
+    volumes:
+      - todo_db_data:/var/lib/postgresql/data
+
+  user-service:
+    build: ./user-service
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://postgres:Khuljasimsim@13@postgres-auth:5432/auth_db
+      JWT_SECRET: 3hYv$9sWq%zLm8B@xK7#pU!1cNtFbE^g
+    depends_on:
+      - postgres-auth
+    ports:
+      - "3001:3001"
+
+  todo-service:
+    build: ./todo-service
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgres://postgres:Khuljasimsim@13@postgres-todo:5432/todo_db
+      JWT_SECRET: 3hYv$9sWq%zLm8B@xK7#pU!1cNtFbE^g
+    depends_on:
+      - postgres-todo
+    ports:
+      - "3002:3002"
+
+  frontend:
+    build: ./frontend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-service
+      - todo-service
+
+volumes:
+  auth_db_data:
+  todo_db_data:
