@@ -131,6 +131,10 @@ h2, h3 {
   margin: 0;
 }
 
+.todo-list-card {
+  width: 533px;
+}
+
 .todo-item {
   display: flex;
   justify-content: space-between;
@@ -142,7 +146,7 @@ h2, h3 {
   padding: 1rem;
   margin-bottom: 1rem;
   transition: box-shadow 0.2s ease-in-out;
-  width: 582px;
+  width: 500px;
 }
 
 .todo-item:hover {
